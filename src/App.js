@@ -44,18 +44,18 @@ class App extends Component {
         <div>
           <Grid>
             <Row className="show-grid">
-              <Col md={6} mdPush={6}>
+              <Col md={6}>
                 <Zone name="Kitchen" />
               </Col>
-              <Col md={6} mdPull={6}>
+              <Col md={6}>
                 <Zone name="Mud Room" />
               </Col>
             </Row>
             <Row className="show-grid">
-              <Col md={6} mdPush={6}>
+              <Col md={6}>
                 <Zone name="Some other place" />
               </Col>
-              <Col md={6} mdPull={6}>
+              <Col md={6}>
                 &nbsp;
               </Col>
             </Row>
