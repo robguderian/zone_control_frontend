@@ -1,9 +1,57 @@
 import React, { Component } from 'react';
 import './App.css';
 
-import {Navbar, Panel, ListGroup, ListGroupItem, Row, Col, Grid} from 'react-bootstrap';
+import {Button, Navbar, Panel, ListGroup, ListGroupItem, Row, Col, Grid, Form, FormGroup, FormControl} from 'react-bootstrap';
 
 class Zone extends Component {
+
+  constructor(props) {
+    super(props);
+    this.upClick = this.upClick.bind(this);
+    this.downClick = this.downClick.bind(this);
+    this.postValue = this.postValue.bind(this);
+    this.getUpdate = this.getUpdate.bind(this);
+    this.state = {"actual": -1}
+  }
+  
+  componentWillMount() {
+    // fetch the data
+    this.getUpdate();
+  }
+
+  getUpdate() {
+    fetch('/zones/' + this.props.name)
+    .then(function(response) {
+      var contentType = response.headers.get("content-type");
+      if(contentType && contentType.includes("application/json")) {
+        return response.json();
+      }
+      throw new TypeError("Oops, we haven't got JSON!");
+    })
+    .then(function(data) { 
+      this.currTemp.value = data.setting;
+      this.setState({"actual": data.current})
+    }.bind(this))
+    .catch(function(error) { console.log(error); });
+   
+
+    // get the next update
+    // wait 60 s
+    setTimeout(this.getUpdate, 60000);
+  }
+
+  upClick() {
+    this.currTemp.value = Math.round(parseFloat(this.currTemp.value) * 10 + 1) / 10;
+  }
+
+  downClick() {
+    this.currTemp.value =  Math.round(parseFloat(this.currTemp.value) * 10 - 1) / 10;
+  }
+
+  postValue(newValue) {
+    fetch('/zones/' + this.props.name + '/' + newValue);
+  }
+
   render () {
     return (
         <Panel>
@@ -11,8 +59,16 @@ class Zone extends Component {
           <Panel.Title componentClass="h3">Zone: {this.props.name}</Panel.Title>
         </Panel.Heading>
         <ListGroup>
-          <ListGroupItem>Current temperature: </ListGroupItem>
-          <ListGroupItem>Set temperature: </ListGroupItem>
+          <ListGroupItem>Current temperature: <b>{this.state.actual}</b></ListGroupItem>
+          <ListGroupItem>Set temperature:
+            <Form inline>
+              <FormGroup controlId={this.props.name}>
+                <Button onClick={this.upClick}><span className="glyphicon glyphicon-chevron-up"> </span></Button>
+                <Col><FormControl inputRef={ref => { this.currTemp = ref; }}  type="email" /></Col>
+                <Button onClick={this.downClick}><span className="glyphicon glyphicon-chevron-down"> </span></Button>
+              </FormGroup>
+            </Form>
+          </ListGroupItem>
         </ListGroup>
       </Panel>
     );
@@ -59,11 +115,7 @@ class App extends Component {
                 &nbsp;
               </Col>
             </Row>
-
            </Grid>
-          
-         
-          
         </div>
       </div>
     );
