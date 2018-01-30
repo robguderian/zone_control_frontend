@@ -11,6 +11,7 @@ class Zone extends Component {
     this.downClick = this.downClick.bind(this);
     this.postValue = this.postValue.bind(this);
     this.getUpdate = this.getUpdate.bind(this);
+    this.handleChange = this.handleChange.bind(this);
     this.state = {"actual": -1}
   }
   
@@ -18,6 +19,7 @@ class Zone extends Component {
     // fetch the data
     this.getUpdate();
   }
+
 
   getUpdate() {
     fetch('/zones/' + this.props.name)
@@ -40,12 +42,29 @@ class Zone extends Component {
     setTimeout(this.getUpdate, 60000);
   }
 
+  handleChange() {
+    // push up change
+    // TODO - wait for all the results to change
+    // do a wait, see if there is any more changes coming, to avoid
+    // too many posts
+    this.pushUpdate(this.currTemp.value);
+  }
+
+  pushUpdate(newValue) {
+    fetch('/zones/' + this.props.name + '/' + newValue,
+      {method: 'POST'}
+    );
+    // care about result?
+  }
+
   upClick() {
     this.currTemp.value = Math.round(parseFloat(this.currTemp.value) * 10 + 1) / 10;
+    this.pushUpdate(this.currTemp.value);
   }
 
   downClick() {
     this.currTemp.value =  Math.round(parseFloat(this.currTemp.value) * 10 - 1) / 10;
+    this.pushUpdate(this.currTemp.value);
   }
 
   postValue(newValue) {
@@ -64,7 +83,7 @@ class Zone extends Component {
             <Form inline>
               <FormGroup controlId={this.props.name}>
                 <Button onClick={this.upClick}><span className="glyphicon glyphicon-chevron-up"> </span></Button>
-                <Col><FormControl inputRef={ref => { this.currTemp = ref; }}  type="email" /></Col>
+                <Col><FormControl inputRef={ref => { this.currTemp = ref; }}  type="number" onChange={this.handleChange} /></Col>
                 <Button onClick={this.downClick}><span className="glyphicon glyphicon-chevron-down"> </span></Button>
               </FormGroup>
             </Form>
