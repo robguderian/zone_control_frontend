@@ -128,7 +128,15 @@ class App extends Component {
             </Row>
             <Row className="show-grid">
               <Col md={6}>
-                <Zone name="Some other place" />
+                <Zone name="Ensuite" />
+              </Col>
+              <Col md={6}>
+                &nbsp;
+              </Col>
+            </Row>
+            <Row className="show-grid">
+              <Col md={6}>
+                <Zone name="Garage" />
               </Col>
               <Col md={6}>
                 &nbsp;
